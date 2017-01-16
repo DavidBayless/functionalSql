@@ -8,12 +8,13 @@ function Query() {
 
   this.source = [];
 
-  this.groupBy = defaultGroupBy;
+  this.selectedField = defaultSelectedField;
+  this.whereClause = defaultWhere;
 }
 
-Query.prototype.select = function(groupBy) {
+Query.prototype.select = function(selectedField) {
   this.selected = true;
-  this.groupBy = groupBy || defaultGroupBy;
+  this.selectedField = selectedField || defaultSelectedField;
   return this;
 }
 
@@ -23,14 +24,26 @@ Query.prototype.from = function(source) {
   return this;
 }
 
-Query.prototype.execute = function() {
-  return this.source.map(this.groupBy);
-}
-
-Query.prototype.where = function() {
+Query.prototype.where = function(whereClause) {
+  this.whereClause = whereClause || defaultWhere;
   return this;
 }
 
-function defaultGroupBy(element) {
+Query.prototype.groupBy = function(groupBy) {
+  this.groupBy = groupBy || defaultGroupBy;
+  return this;
+}
+
+Query.prototype.execute = function() {
+  return this.source.filter(this.whereClause).map(this.selectedField);
+}
+
+function defaultSelectedField(element) {
   return element;
 }
+
+function defaultWhere() {
+  return true;
+}
+
+module.exports = query;
